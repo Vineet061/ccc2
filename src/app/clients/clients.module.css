@@ -1,0 +1,118 @@
+/* Deliberately spare: two clients do not need a grid of cards competing for
+   attention. One column of oversized rows, each one a full-width rule with the
+   name set large, so the page reads as a short list rather than a thin one. */
+
+.main {
+  max-width: var(--page-max-narrow);
+  margin-inline: auto;
+  padding: calc(var(--space-8) * 1.4) var(--page-gutter) calc(var(--space-8) * 2);
+}
+
+.title {
+  font-size: clamp(34px, 5.6vw, 62px);
+  max-width: 16ch;
+  margin: 0;
+}
+
+.lede {
+  max-width: 46ch;
+  font-size: clamp(16px, 2.2vw, 19px);
+  margin: var(--space-4) 0 0;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+
+.list {
+  list-style: none;
+  margin: calc(var(--space-8) * 1.4) 0 0;
+  padding: 0;
+  border-top: 1px solid var(--color-divider);
+}
+
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+  align-items: baseline;
+  padding: clamp(28px, 3.4vw, 46px) 0;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+@media (min-width: 760px) {
+  .row {
+    grid-template-columns: auto 1fr auto;
+    gap: clamp(24px, 4vw, 56px);
+  }
+}
+
+/* The monogram carries the visual weight, since there are no logos. */
+.mark {
+  display: grid;
+  place-items: center;
+  width: clamp(56px, 6vw, 76px);
+  height: clamp(56px, 6vw, 76px);
+  border-radius: 999px;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: clamp(21px, 2.2vw, 28px);
+  letter-spacing: -0.02em;
+  background: var(--color-accent-200);
+  color: var(--color-accent-800);
+  flex: none;
+}
+
+.row:nth-child(even) .mark {
+  background: var(--color-accent-2-200);
+  color: var(--color-accent-2-800);
+}
+
+.name {
+  font-size: clamp(28px, 4.4vw, 46px);
+  letter-spacing: -0.03em;
+  margin: 0;
+  line-height: 1.05;
+}
+
+.note {
+  margin: var(--space-2) 0 0;
+  max-width: 48ch;
+  color: color-mix(in srgb, var(--color-text) 66%, transparent);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-self: center;
+}
+
+/* -- closing note -- */
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: calc(var(--space-8) * 1.5);
+  padding: clamp(24px, 3vw, 40px);
+  border-radius: calc(var(--radius-lg) * 1.3);
+  background: var(--color-surface);
+}
+
+.foot h2 {
+  margin: 0 0 var(--space-1);
+  font-size: clamp(21px, 2.4vw, 27px);
+}
+
+.foot p {
+  margin: 0;
+  max-width: 44ch;
+  color: color-mix(in srgb, var(--color-text) 66%, transparent);
+}
+
+@media (max-width: 520px) {
+  .foot .btn {
+    width: 100%;
+  }
+}

@@ -1,0 +1,158 @@
+.form {
+  display: grid;
+  gap: var(--space-3);
+}
+
+/* Subject and message run the full width; email and phone share a row once
+   there is room for two comfortable columns. */
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr));
+  gap: var(--space-3);
+}
+
+.field {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.label {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+}
+
+.optional {
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 15px;
+  color: var(--color-text);
+  caret-color: var(--color-accent);
+  background: var(--color-bg);
+  border: 1px solid var(--color-divider);
+  border-radius: calc(var(--radius-lg) * 0.7);
+  padding: 11px 15px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.textarea {
+  min-height: 118px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: color-mix(in srgb, var(--color-text) 38%, transparent);
+}
+
+.input:hover,
+.textarea:hover {
+  border-color: color-mix(in srgb, var(--color-text) 34%, transparent);
+}
+
+.input:focus-visible,
+.textarea:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 22%, transparent);
+}
+
+.input[aria-invalid="true"],
+.textarea[aria-invalid="true"] {
+  border-color: var(--color-accent-600);
+}
+
+.error {
+  font-size: 12px;
+  color: var(--color-accent-700);
+}
+
+/* Bot trap. Off-screen rather than display:none, because some bots skip
+   hidden inputs but will happily fill a positioned one. */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-1);
+}
+
+.submit {
+  min-width: 168px;
+}
+
+.spinner {
+  width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  border: 2px solid color-mix(in srgb, currentColor 30%, transparent);
+  border-top-color: currentColor;
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* -- result banner -- */
+
+.status {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: calc(var(--radius-lg) * 0.8);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.statusOk {
+  background: var(--color-accent-2-200);
+  color: var(--color-accent-2-800);
+}
+
+.statusBad {
+  background: var(--color-accent-200);
+  color: var(--color-accent-800);
+}
+
+.statusIcon {
+  flex: none;
+  margin-top: 2px;
+}
+
+.statusFallback {
+  color: inherit;
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 2s;
+  }
+}

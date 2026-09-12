@@ -1,0 +1,61 @@
+/* Segmented Warm / Dark control, matching the design's .seg component. */
+
+.seg {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid var(--color-divider);
+  border-radius: 999px;
+  background: transparent;
+}
+
+.opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  white-space: nowrap;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.opt + .opt {
+  border-left: 1px solid var(--color-divider);
+}
+
+.opt[aria-pressed="true"] {
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+
+.opt[aria-pressed="false"]:hover {
+  background: color-mix(in srgb, var(--color-text) 7%, transparent);
+}
+
+.opt:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+  border-radius: 0;
+}
+
+/* Below the drawer breakpoint the label is dropped and the control becomes a
+   pair of icon buttons, so it still fits beside the hamburger. */
+.compact .opt {
+  padding: 8px 11px;
+}
+
+.compact .label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

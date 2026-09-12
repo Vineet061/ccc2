@@ -1,0 +1,92 @@
+/* The card is an article with a stretched title link rather than one big
+   anchor: the click target covers the whole surface, while the markup stays a
+   heading with a link inside it, which is what a screen reader's list of
+   headings and links should see. */
+
+.card {
+  position: relative;
+  min-width: 0;
+  transition: transform 160ms var(--ease-out), box-shadow 160ms ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Keyboard focus lands on the title link, so the ring is drawn on the card. */
+.card:focus-within {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.title {
+  font-size: clamp(20px, 1.6vw, 26px);
+  margin: 0;
+}
+
+/* On a wide monitor a two-up row makes each card very wide. Capping the body
+   measure stops 13px text running to 110 characters a line, and the extra
+   breathing room keeps the card from reading as a mostly-empty box. */
+.card .body {
+  max-width: 62ch;
+}
+
+.titleLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.titleLink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.titleLink:focus-visible {
+  outline: none;
+}
+
+/* -- footer: the action cue -- */
+
+.foot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: var(--space-2);
+}
+
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--color-accent-700);
+}
+
+.card:hover .live svg {
+  transform: translateX(3px);
+}
+
+.live svg {
+  transition: transform 160ms var(--ease-out);
+}

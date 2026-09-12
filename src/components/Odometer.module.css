@@ -1,0 +1,104 @@
+/* A numeral rendered as physical digit reels.
+
+   Each digit is a ten-sided drum: the ten faces are placed around a cylinder
+   at 36° intervals and pushed out along Z by the cylinder's radius, so exactly
+   one face is square to the viewer and its neighbours turn away edge-on. To
+   show a digit the drum is rotated to bring that face to the front, and the
+   entrance simply starts two full turns away and eases into place.
+
+   Radius for a regular 10-gon of side h is h / (2·tan(18°)) ≈ 1.5388·h. */
+
+.value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.01em;
+  font-variant-numeric: tabular-nums;
+  /* Height of one face; also the unit the cylinder radius is derived from. */
+  --face: 1.06em;
+  --radius: calc(var(--face) * 1.5388);
+  max-width: 100%;
+}
+
+/* -- digit drum -- */
+
+.reel {
+  position: relative;
+  display: inline-block;
+  height: var(--face);
+  /* `ch` on a tabular face is exactly one digit wide, so the reel never
+     changes width as the digits spin. */
+  width: 1ch;
+  perspective: 460px;
+  perspective-origin: 50% 50%;
+  /* The housing. Faces 36° and 72° off the front are still turned towards the
+     viewer, so backface-visibility alone will not hide them — the window has
+     to crop the drum to one face, exactly as a physical odometer does. */
+  overflow: hidden;
+}
+
+.drum {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--angle, 0deg));
+  will-change: transform;
+}
+
+.spinning .drum {
+  transition: transform 1500ms cubic-bezier(0.17, 0.85, 0.26, 1);
+  transition-delay: var(--delay, 0ms);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  /* Hides the faces on the far side of the drum, so no mirrored digit shows
+     through the front one. */
+  backface-visibility: hidden;
+  transform: rotateX(var(--face-angle)) translateZ(var(--radius));
+  /* The sliver of the neighbouring face that the housing still reveals is
+     dimmed, which reads as the curve of the drum falling away. */
+  opacity: 0.5;
+}
+
+/* The face square to the viewer is the one being read, so it stays solid. */
+.faceFront {
+  opacity: 1;
+}
+
+/* -- fixed characters ($, +, k, spaces, "mo") -- */
+
+.fixed {
+  display: inline-block;
+  white-space: pre;
+}
+
+.spinning .fixed {
+  animation: flip 620ms cubic-bezier(0.17, 0.85, 0.26, 1) var(--delay, 0ms)
+    both;
+}
+
+@keyframes flip {
+  from {
+    opacity: 0;
+    transform: perspective(460px) rotateX(-80deg) translateY(0.2em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* -- reduced motion: the settled value, no drum spin, no flip -- */
+
+@media (prefers-reduced-motion: reduce) {
+  .spinning .drum {
+    transition: none;
+  }
+  .spinning .fixed {
+    animation: none;
+  }
+}

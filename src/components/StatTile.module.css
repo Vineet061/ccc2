@@ -1,0 +1,267 @@
+/* A single figure in the "by the numbers" band.
+
+   The tile is a small 3D scene. It swings in from below on its X axis, its
+   contents sit on three different Z planes, and while the pointer is over it
+   the whole card tilts towards the cursor so those planes visibly separate.
+   The numeral itself is a set of rotating digit drums (see Odometer).
+
+   Everything is skipped under prefers-reduced-motion, and the settled figure
+   is rendered from the server either way, so the value is never unreadable. */
+
+.slot {
+  flex: 1 1 150px;
+  min-width: 0;
+  /* Each tile gets its own vanishing point, so a tile at the edge of the row
+     is not sheared by a perspective centred on the panel. */
+  perspective: 900px;
+  perspective-origin: 50% 50%;
+}
+
+.slot[data-state="idle"] {
+  opacity: 0;
+}
+
+.slot[data-state="idle"] .tile {
+  transform: translateY(26px) rotateX(-26deg) scale(0.94);
+}
+
+.slot[data-state="active"] {
+  opacity: 1;
+  transition: opacity 520ms var(--ease-out) var(--delay, 0ms);
+}
+
+.tile {
+  position: relative;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+  display: grid;
+  gap: var(--space-2);
+  justify-items: center;
+  align-content: start;
+  text-align: center;
+  padding: clamp(22px, 2.4vw, 30px) var(--space-3);
+  border-radius: calc(var(--radius-lg) * 1.25);
+  background: var(--color-bg);
+  cursor: default;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform 620ms var(--ease-out) var(--delay, 0ms),
+    box-shadow 260ms ease, background 260ms ease;
+}
+
+/* Once the tile has landed, the pointer takes over and the transition gets
+   short so the tilt tracks the cursor rather than lagging behind it. */
+.slot[data-state="active"] .tile[data-tilting="true"] {
+  transition: transform 120ms linear, box-shadow 260ms ease,
+    background 260ms ease;
+  box-shadow: var(--shadow-lg);
+}
+
+.tile:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Linked tiles read as clickable; the plain one keeps the default cursor. */
+a.tile {
+  cursor: pointer;
+}
+
+/* A small corner cue so it is obvious which figures lead somewhere. */
+.cue {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  color: color-mix(in srgb, var(--tone-strong) 55%, transparent);
+  opacity: 0;
+  transform: translate(-3px, 3px);
+  transition: opacity 200ms ease, transform 200ms var(--ease-out);
+}
+
+a.tile:hover .cue,
+a.tile:focus-visible .cue {
+  opacity: 1;
+  transform: none;
+}
+
+.slot[data-tone="accent"] .tile[data-tilting="true"] {
+  background: var(--color-accent-200);
+}
+
+.slot[data-tone="accent-2"] .tile[data-tilting="true"] {
+  background: var(--color-accent-2-200);
+}
+
+/* A single light sweep across the tile as it lands, so the band reads as one
+   wave rather than six separate entrances. */
+.sweep {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 35%,
+    color-mix(in srgb, var(--tone-strong) 22%, transparent) 50%,
+    transparent 65%
+  );
+}
+
+.slot[data-state="active"] .sweep {
+  animation: sweep 1100ms var(--ease-out) calc(var(--delay, 0ms) + 200ms) 1;
+}
+
+@keyframes sweep {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+/* -- the three depth planes -- */
+
+.layerBadge {
+  transform: translateZ(22px);
+}
+
+/* Long figures are set smaller so they fit, which would otherwise leave every
+   tile's label at a different height. Reserving the tallest numeral's line box
+   here keeps the labels on one line across the whole band. */
+.layerValue {
+  transform: translateZ(46px);
+  display: grid;
+  place-items: center;
+  min-height: calc(clamp(26px, 3.4vw, 44px) * 1.06);
+}
+
+.layerLabel {
+  transform: translateZ(12px);
+}
+
+/* -- icon + progress ring -- */
+
+.badge {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin-bottom: var(--space-1);
+}
+
+.ring {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-90deg);
+  overflow: visible;
+}
+
+.ringTrack {
+  fill: none;
+  stroke: color-mix(in srgb, var(--tone-strong) 18%, transparent);
+  stroke-width: 2;
+}
+
+.ringValue {
+  fill: none;
+  stroke: var(--tone-strong);
+  stroke-width: 2;
+  stroke-linecap: round;
+  /* Circumference of r=22: 2πr ≈ 138.2. Drawn by animating the offset from a
+     full dash gap down to nothing. */
+  stroke-dasharray: 138.2;
+  stroke-dashoffset: 138.2;
+}
+
+.slot[data-state="active"] .ringValue {
+  animation: draw 1300ms var(--ease-out) calc(var(--delay, 0ms) + 150ms) both;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--tone-soft);
+  color: var(--tone-ink);
+}
+
+/* -- numeral -- */
+
+/* The tile is narrow, so the numeral is sized against how many characters it
+   has to fit rather than one size for all six. Without this the longest figure
+   ("$14.5k") runs past the tile and its last character is clipped by the
+   rounded corner. `--len` is set per tile by the component. */
+.value {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: clamp(26px, 3.4vw, 44px);
+  line-height: 1;
+  color: var(--tone-strong);
+  letter-spacing: -0.02em;
+}
+
+.slot[data-len="4"] .value {
+  font-size: clamp(24px, 2.9vw, 38px);
+}
+
+.slot[data-len="5"] .value {
+  font-size: clamp(22px, 2.5vw, 34px);
+}
+
+/* 6 characters or more. */
+.slot[data-len="6"] .value {
+  font-size: clamp(20px, 2.2vw, 30px);
+}
+
+.label {
+  font-size: 12px;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+  text-wrap: balance;
+}
+
+/* -- reduced motion: land on the finished state, animate nothing -- */
+
+@media (prefers-reduced-motion: reduce) {
+  .slot,
+  .slot[data-state="idle"] {
+    opacity: 1;
+    transition: none;
+  }
+
+  .tile,
+  .slot[data-state="idle"] .tile {
+    transform: none;
+    transition: box-shadow 260ms ease, background 260ms ease;
+  }
+
+  .slot[data-state="active"] .sweep,
+  .slot[data-state="active"] .ringValue {
+    animation: none;
+  }
+
+  .ringValue {
+    stroke-dashoffset: 0;
+  }
+}
